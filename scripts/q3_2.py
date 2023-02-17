@@ -29,22 +29,27 @@ def odometry_callback(data):
 	global odometry_msg
 	odometry_msg = data
 
+#Função para parar de andar
 def para_andar():
 	velocity.linear.x = 0.0
 	pub.publish(velocity) 
-	
+
+#Função para andar pra frente	
 def move_frente():
 	velocity.linear.x = 0.5
 	pub.publish(velocity)  
 
+#Função para parar de girar
 def para_rodar():
 	velocity.angular.z = 0.0
 	pub.publish(velocity) 
 
+#Função para girar, recebo o valor por parametro pra verificar se o giro é pra direita ou esquerda
 def roda(velocidade):
 	velocity.angular.z = velocidade
 	pub.publish(velocity)
 
+#Função para localização
 def localizacao():
 	global px,py
 	px = odometry_msg.pose.pose.position.x
@@ -66,6 +71,8 @@ if __name__ == "__main__":
 	rate = rospy.Rate(10) #10hz
 
 	while not rospy.is_shutdown():
+		
+		#Chama funções de localização e de mover para frente, calcula distancia e mostra os dados em tempo real
 
 		localizacao()
 
@@ -79,6 +86,7 @@ if __name__ == "__main__":
 		print("Distância: %.2f" % distance)
 		print("=================================")
 
+		#Ifs para verificar a distancia de pontos alvos e setar novos pontos ao chegar neles
 		if((distance < 0.5) and (gx == target0[0]) and (gy == target0[1])):
 			roda(0.1)
 			gx = target1[0]
@@ -94,6 +102,7 @@ if __name__ == "__main__":
 			gx = target3[0]
 			gy = target3[1]
 		
+		#Mostrar quando chegar no ponto alvo final e parar de andar
 		elif((distance < 0.5) and (gx == target3[0]) and (gy == target3[1])):
 			para_andar()
 			para_rodar()
