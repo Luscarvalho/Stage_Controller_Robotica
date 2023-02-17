@@ -48,17 +48,20 @@ velocity = Twist()
 def odometry_callback(data):
 	global odometry_msg
 	odometry_msg = data
-	
+
+#função para fazer o robo andar para frente sem girar
 def move_frente():
 	velocity.linear.x = 0.5
 	velocity.angular.z = 0.0
 	pub.publish(velocity)  
 
+#função para fazer o robo parar de andar pra frente e girar
 def para():
 	velocity.linear.x = 0.0
 	velocity.angular.z = 0.0
 	pub.publish(velocity)  
 
+#função para pegar a localização do robo
 def Localizacao():
 	global px,py
 	px = odometry_msg.pose.pose.position.x
@@ -72,6 +75,7 @@ def Localizacao():
 	(roll, pitch, yaw) = euler_from_quaternion ([ox, oy, oz, ow])
 	ang = yaw
 
+#função que define o caminho que o robo deve seguir
 def ModeloCinematico():
 	global px, py
 	global anteriorHip, anteriorB, anteriorVA
@@ -151,19 +155,24 @@ if __name__ == "__main__":
 	rate = rospy.Rate(10) #10hz
   
 	while not rospy.is_shutdown():
-      
+    
+		#chama a função de localização
 		Localizacao()
 		
+		# calcula distancia do robo paa o alvo
 		distance = math.sqrt((px-gx)**2 + (py-gy)**2) 
 		
+		#mostra nas telas os dados em tempo real
 		print("=================================")
 		print("Alvo: (%.2f, %.2f)" % (gx, gy))
 		print("Posição: (%.2f, %.2f)" % (px, py)) 
 		print("Distância: %.2f" % distance)
 		print("=================================")
 
+		#chama a função de definir o caminho do robo
 		ModeloCinematico()
 
+		# Se a distancia do robo e do alvo for menor que o valor definido, o robo para
 		if( distance < min_distance ):
 			para()
 

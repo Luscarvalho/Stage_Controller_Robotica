@@ -1,0 +1,4 @@
+<launch>
+	<node name="stageros" pkg="stage_ros" type="stageros" args="$(find trabalho_robotica)/world/q3_world2.world"/>
+	<node pkg="trabalho_robotica" type="q3_2.py" name="q3_2" output="screen" />
+</launch>
